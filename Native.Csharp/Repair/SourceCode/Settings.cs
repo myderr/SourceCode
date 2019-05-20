@@ -21,35 +21,41 @@ namespace Native.Csharp.Repair.SourceCode
 
         private void Setting_Load(object sender, EventArgs e)
         {
-            string strPath = Common.AppDirectory + "//设置.ini";
-            if (File.Exists(strPath))
+            txtMaster.Text = Code.GetConfigItem(Common.AppDirectory+"设置.ini","设置","主人QQ");
+            string Open = Code.GetConfigItem(Common.AppDirectory + "设置.ini", "设置", "开关插件","开启");
+            if (Open == "开启")
             {
-                IniObject iObject = IniObject.Load(strPath, Encoding.Default);
-                if (iObject.ContainsKey("设置主人"))
-                {
-                    IniSection section1 = iObject["设置主人"];
-                    if (section1.ContainsKey("主人QQ"))
-                    {
-                        txtMaster.Text = section1["主人QQ"].Value;
-                    }
-                }
+                radOpen.Checked = true;
+            }
+            else
+            {
+                radClose.Checked = true;
             }
         }
 
         private void BtnSure_Click(object sender, EventArgs e)
         {
-            string strPath = Common.AppDirectory + "//设置.ini";
-            string strMaster = txtMaster.Text;
-            IniObject iObject = new IniObject();
-            if (File.Exists(strPath))
+            string Open = "";
+            if (radOpen.Checked)
             {
-                iObject = IniObject.Load(strPath, Encoding.Default);
+                Open = "开启";
             }
-            IniSection iSection = new IniSection("设置主人");
-            iSection.Add("主人QQ", strMaster);
-            iObject.Add(iSection);
-            iObject.Save(strPath);
+            else
+            {
+                Open = "关闭";
+            }
+            Code.AddConfigItem(Common.AppDirectory + "设置.ini", "设置", "主人QQ", txtMaster.Text);
+            Code.AddConfigItem(Common.AppDirectory + "设置.ini", "设置", "开关插件", Open);
             this.Close();
+        }
+        private void TxtMaster_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            int charCode = (int)e.KeyChar;
+            if (charCode == 46 || charCode == 8) return;
+            if (charCode < 48 || (charCode > 57 && charCode < 96) || charCode > 105)
+            {
+                e.Handled = true;
+            }
         }
     }
 }

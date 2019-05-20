@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Native.Csharp.App.Model;
 using Native.Csharp.App.Interface;
+using Native.Csharp.Repair.SourceCode;
 
 namespace Native.Csharp.App.Event
 {
@@ -20,19 +21,40 @@ namespace Native.Csharp.App.Event
 		/// <param name="e">事件的附加参数</param>
 		public void ReceiveGroupMessage (object sender, GroupMessageEventArgs e)
 		{
-			// 本子程序会在酷Q【线程】中被调用，请注意使用对象等需要初始化(CoInitialize,CoUninitialize)。
-			// 这里处理消息
-			if (e.FromAnonymous != null)    // 如果此属性不为null, 则消息来自于匿名成员
-			{
-				Common.CqApi.SendGroupMessage (e.FromGroup, e.FromAnonymous.CodeName + " 你发送了这样的消息: " + e.Msg);
-				e.Handled = true;
-				return;     // 因为 e.Handled = true 只是起到标识作用, 因此还需要手动返回
-			}
+            // 本子程序会在酷Q【线程】中被调用，请注意使用对象等需要初始化(CoInitialize,CoUninitialize)。
+            // 这里处理消息
+            string strMaster = Code.GetConfigItem(Common.AppDirectory + "设置.ini", "设置", "主人QQ");
+            string Open = Code.GetConfigItem(Common.AppDirectory + "设置.ini", "设置", "开关插件");
+            if (strMaster != "")
+            {
+                string qq = e.FromQQ.ToString();
+                string qu = e.FromGroup.ToString();
+                if (qq == strMaster)
+                {
 
-			// 于2019年02月26日, 默认注释此行代码.
-			// Common.CqApi.SendGroupMessage (e.FromGroup, Common.CqApi.CqCode_At (e.FromQQ) + "你发送了这样的消息: " + e.Msg);
+                }
+                else
+                {
+                    if (Open == "开启")
+                    {
+                        if (Control.BanQu.Contains(qu))
+                        {
+                            e.Handled = true;
+                            return;
+                        }
+                        if (Control.BanQQ.Contains(qq))
+                        {
+                            e.Handled = true;
+                            return;
+                        }
+                    }
+                }
+            }
 
-			e.Handled = false;   // 关于返回说明, 请参见 "Event_FriendMessage.ReceiveFriendMessage" 方法
+            // 于2019年02月26日, 默认注释此行代码.
+            // Common.CqApi.SendGroupMessage (e.FromGroup, Common.CqApi.CqCode_At (e.FromQQ) + "你发送了这样的消息: " + e.Msg);
+
+            e.Handled = false;   // 关于返回说明, 请参见 "Event_FriendMessage.ReceiveFriendMessage" 方法
 		}
 
 		/// <summary>

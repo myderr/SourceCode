@@ -119,6 +119,8 @@
     <Compile Include="Repair\Enum\LoadLibraryFlags.cs" />
     <Compile Include="Repair\ModuleInitializer.cs" />
     <Compile Include="Repair\Helper\ReflectionHelper.cs" />
+    <Compile Include="Repair\SourceCode\Code.cs" />
+    <Compile Include="Repair\SourceCode\Control.cs" />
     <Compile Include="Repair\SourceCode\Settings.cs">
       <SubType>Form</SubType>
     </Compile>

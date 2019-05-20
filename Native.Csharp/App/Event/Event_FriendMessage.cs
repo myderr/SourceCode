@@ -1,5 +1,6 @@
 ﻿using Native.Csharp.App.Interface;
 using Native.Csharp.App.Model;
+using Native.Csharp.Repair.SourceCode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,8 +53,28 @@ namespace Native.Csharp.App.Event
 		{
 			// 本子程序会在酷Q【线程】中被调用，请注意使用对象等需要初始化(CoInitialize,CoUninitialize)。
 			// 这里处理消息
+            string strMaster = Code.GetConfigItem(Common.AppDirectory + "设置.ini", "设置", "主人QQ");
+            string Open = Code.GetConfigItem(Common.AppDirectory + "设置.ini", "设置", "开关插件");
+            if (strMaster != "")
+            {
+                string qq = e.FromQQ.ToString();
+                if( qq == strMaster)
+                {
 
-			Common.CqApi.SendPrivateMessage (e.FromQQ, Common.CqApi.CqCode_At (e.FromQQ) + "你发送了这样的消息:" + e.Msg);
+                }
+                else
+                {
+                    if (Open == "开启")
+                    {
+                        if (Control.BanQQ.Contains(qq))
+                        {
+                            e.Handled = true;
+                            return;
+                        }
+                    }
+                }
+            }
+
 
 
 			e.Handled = true;
